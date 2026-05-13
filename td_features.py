@@ -1,13 +1,10 @@
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
-# time-domain feature extraction (explicar por qué elegí estas y explicarlas)
+# time-domain feature extraction (por qué elegí estas y explicarlas)
 
-
-df = pd.read_csv("dataset.csv") # dataset completo
-df = df.drop(df.columns[-1], axis=1) # eliminamos label
-
-def td_features_dataset(df: pd.DataFrame):
+def td_features_dataset(df: pd.DataFrame, scaler=StandardScaler()):
     """
     Convierte el dataset (sin label) a métricas del dominio temporal:
     RMS, WL, MAV, SSC, ZC.
@@ -31,15 +28,24 @@ def td_features_dataset(df: pd.DataFrame):
     mav = np.mean(np.abs(data), axis=2)
 
     # waveform-length
+    wl = np.sum(np.abs(np.diff(data, axis=2)), axis=2)
 
-    # ssc
+    # ssc (n_f, 8, 6) la fórmula es de i=2 a N-1
+    x_diff_ant = data[:,:,1:-1] - data[:,:,:-2]
+    x_diff_post = data[:,:,1:-1] - data[:,:,2:]
+    ssc = np.sum((x_diff_ant*x_diff_post)>=0, axis=2)
 
     # zero-crossing
+    zc = 0
+
+    # pd.dataframe concatenado [RMS, MAV, WL, SSC, ZC]
+    df = pd.DataFrame(np.concatenate((rms, mav, wl, ssc, zc), axis=1))
 
     # escalar por si tienen magnitudes muy diferentes
-
-    return None # retornar pd.dataframe concatenado [RMS, MAV, WL, SSC, ZC]
+    return scaler.fit_transform(df)
 
 
 if __name__ == "__main__":
-    td_features_dataset(df)
+    df = pd.read_csv("dataset.csv") # dataset completo
+    df = df.drop(df.columns[-1], axis=1) # eliminamos label
+    df_td = td_features_dataset(df)
