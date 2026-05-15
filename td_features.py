@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 def td_features_dataset(df: pd.DataFrame, scaler=StandardScaler()):
     """
-    Convierte el dataset (sin label) a métricas del dominio temporal:
+    Convierte el dataset (escalado y sin label) a métricas del dominio temporal:
     RMS, WL, MAV, SSC, ZC.
 
     Args:
@@ -36,7 +36,11 @@ def td_features_dataset(df: pd.DataFrame, scaler=StandardScaler()):
     ssc = np.sum((x_diff_ant*x_diff_post)>=0, axis=2)
 
     # zero-crossing
-    zc = 0
+    threshold = 0.01 
+    product = data[:, :, :-1] * data[:, :, 1:]
+    diff_abs = np.abs(data[:, :, 1:] - data[:, :, :-1]) 
+    zc_condition = (product < 0) & (diff_abs >= threshold)
+    zc = np.sum(zc_condition, axis=2)
 
     # pd.dataframe concatenado [RMS, MAV, WL, SSC, ZC]
     df = pd.DataFrame(np.concatenate((rms, mav, wl, ssc, zc), axis=1))
