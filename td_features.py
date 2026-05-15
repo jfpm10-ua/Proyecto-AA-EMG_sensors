@@ -10,7 +10,7 @@ def td_features_dataset(df: pd.DataFrame, scaler=StandardScaler()):
     RMS, WL, MAV, SSC, ZC.
 
     Args:
-        df(pd.DataFrame): Dataframe de entrada, púramente numérico.
+        df(pd.DataFrame): Dataframe de entrada, necesariamente escalado [-1, 1], púramente numérico.
 
     Returns:
         df(pd.DataFrame): DataFrame de métricas de dominio temporal.
