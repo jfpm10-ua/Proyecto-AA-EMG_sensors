@@ -19,7 +19,7 @@ def td_features_dataset(df: pd.DataFrame, scaler=None):
     data = np.array(df)
     n_f = data.shape[0]
     # divimos en bloques de sensores (8 sensores x 8 mediciones)
-    data = data.reshape(n_f, 8, 8)
+    data = data.reshape(n_f, 8, 8).transpose(0, 2, 1)
 
     # rms
     rms = np.sqrt((np.mean(data**2, axis=2)))
