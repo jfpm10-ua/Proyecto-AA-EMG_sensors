@@ -19,7 +19,7 @@ def td_features_dataset(df: pd.DataFrame, scaler=None):
     data = np.array(df)
     n_f = data.shape[0]
     # divimos en bloques de sensores (8 sensores x 8 mediciones)
-    data = data.reshape(n_f, 8, 8).transpose(0, 2, 1)
+    data = data.reshape(n_f, 8, 8).transpose(0, 2, 1) # cambiamos filas por columnas
 
     # rms
     rms = np.sqrt((np.mean(data**2, axis=2)))
@@ -44,9 +44,10 @@ def td_features_dataset(df: pd.DataFrame, scaler=None):
 
     # concatenado [RMS, MAV, WL, SSC, ZC]
     result = np.concatenate((rms, mav, wl, ssc, zc), axis=1)
-    if scaler is not None:
-        result = scaler.fit_transform(result)
-    # escalar por si tienen magnitudes muy diferentes
+
+    if scaler is not None: # escalar por si tienen magnitudes muy diferentes
+        result = scaler.fit_transform(result) 
+    
     return pd.DataFrame(result)
 
 
